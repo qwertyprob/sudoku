@@ -1,6 +1,7 @@
 {
-  "autoload-dev": {
+  "autoload": {
     "psr-4": {
+      "Classes\\": "Classes/"
 
     }
   }

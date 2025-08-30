@@ -1,6 +1,8 @@
 <?php
-$arr = [1,2,4,5,6];
-phpinfo();
-die;
 
-echo "friends";
+require_once __DIR__ . '/vendor/autoload.php';
+use Classes\Board;
+use Classes\Console;
+
+Console::startGame();
+
