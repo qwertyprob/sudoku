@@ -4,6 +4,7 @@ namespace Classes;
 
 class Board
 {
+    private static $errorCounter = 0;
     private static $board = [
     //первый 3x3
     [ 7,0,0, 0,5,0, 6,0,0 ],
@@ -19,13 +20,22 @@ class Board
     [ 0,0,2, 0,3,0 ,0,0,9 ]
 ];
     private static array $initBoard;
-    private function __construct() {
-        self::$initBoard = self::getBoardArray();
+    private static bool $initialized = false;
+    private static function staticConstructor() {
+        if (!self::$initialized) {
+            self::$initBoard = self::$board;
+            self::$initialized = true;
+        }
     }
+
+    private function __construct() {
+    }
+
     public static function printBoard(){
+
         echo "\n\t----------|-----------|----------";
         for($i = 0; $i < 9; $i++){
-            if($i % 3 == 0 & $i != 0)
+            if($i % 3 == 0 && $i != 0)
                 echo "\n\t----------|-----------|----------";
             echo "\n";
             for($j = 0; $j < 9; $j++){
@@ -39,52 +49,46 @@ class Board
                 else{
                     echo "\t".$value;
                 }
-
             }
-
 
         }
         echo "\n\t----------|-----------|----------";
 
     }
-    protected static function generateBoardArray(){
-        return self::$board;
-    }
+    public static function insertValue($row, $col, $value){
 
-    public static function insertValue($row, $col, $value)
-    {
-        echo "\nВставляем цифру..\n";
+        self::staticConstructor();
 
-        if($value <= 0 || $value > 9 ){
-            echo "\n\033[31mИнформация: \033[0m Число должно быть 1-9!";
+        if($value < 1 || $value > 9){
+            self::addError("Число должно быть от 1 до 9!");
             return;
         }
 
-        if (!self::checkInCube($row, $col, $value)) {
-            echo "\n\033[31mОшибка:\033[0m В этом 3x3 кубике уже есть $value!";
+        if($row < 1 || $col < 1 || $row > 9 || $col > 9)
+        {
+            self::addError("Строка и колонка должны быть от 1 до 9!");
             return;
         }
 
-        if (!self::checkRow($row, $col, $value)) {
-            echo "\n\033[31mОшибка:\033[0m В этой строке уже есть $value!";
+        if(self::checkInitNumber($row,$col,$value)){
+            self::addError("Клетка исходная, менять нельзя!");
             return;
         }
 
-        if (!self::checkColumn($row, $col, $value)) {
-            echo "\n\033[31mОшибка:\033[0m В этом столбце уже есть $value!";
+        if(!self::checkInCube($row,$col,$value) ||
+            !self::checkRow($row,$col,$value) ||
+            !self::checkColumn($row,$col,$value)){
             return;
         }
-
-        if(self::$board[$row-1][$col-1] != 0){
-
-            echo "\n\033[31mИнформация:\033[0m Клетка занята!";
-            return;
-        }
-
 
         self::$board[$row-1][$col-1] = $value;
-        echo "\n\n\033[32mИнформация:\033[0m Вы успешно вставили цифру!\n";
+        echo "\n\033[32mИнформация:\033[0m Вы успешно вставили цифру!\n";
     }
+    private static function addError($message){
+        self::$errorCounter++;
+        echo "\n\033[31mОшибка: \033[0m$message";
+    }
+
 
     private static function checkInCube($row,$col,$value)
     {
@@ -95,6 +99,8 @@ class Board
             for ($j = $startCol; $j < $startCol + 3; $j++) {
                 if (self::$board[$i][$j] == $value) {
                     echo "\n\033[31mОшибка: \033[0m В этом 3x3 кубике уже есть $value!";
+                    //Увеличиваем кол-во ошибок
+                    self::$errorCounter++;
                     return false;
                 }
             }
@@ -111,6 +117,10 @@ class Board
             if(self::$board[$row-1][$i] == $value){
                 echo "\n\033[31mОшибка: \033[0m";
                 echo "Ваша цифра не может быть здесь! Проверка по строке 1 - 9";
+
+                //Увеличиваем кол-во ошибок
+                self::$errorCounter++;
+
                 return false;
             }
         }
@@ -124,10 +134,32 @@ class Board
             if(self::$board[$i][$col - 1] == $value){
                 echo "\n\033[31mОшибка: \033[0m";
                 echo "Ваша цифра не может быть здесь! Проверка по столбцу 1 - 9";
+
+                //Увеличиваем кол-во ошибок
+                self::$errorCounter++;
+
                 return false;
             }
         }
         return true;
+    }
+
+    private static function checkInitNumber($row,$col,$value)
+    {
+        if(self::$board[$row-1][$col-1] == 0)
+            return false;
+
+        if(self::$board[$row-1][$col-1] == self::$initBoard[$row-1][$col-1]){
+            return true;
+        }
+
+
+
+
+
+        return false;
+
+
     }
 
 

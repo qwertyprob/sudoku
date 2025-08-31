@@ -14,33 +14,32 @@ class Console
         $message = readline();
 
         if (strtolower(trim($message)) === "start") {
+
             echo "\nИзначальная таблица:";
             Board::printBoard();
             self::startInserting();
-
         }
-        else{
+        else
+        {
             echo "\nВы не начали игру. Введите start!";
         }
 
-        if(self::$endFlag)
-        {
-            echo "\nИгра окончена! Спасибо за игру!";
-        }
+
+
 
     }
 
     private static function startInserting()
     {
-
-
-        while(!self::$endFlag){
+        while(!self::$endFlag)
+        {
             echo "\nВведите строку, колонку и число:\n";
             echo "Строка:";
             $row = readline();
 
             if($row === "end"){
-                self::$endFlag == true;
+                self::$endFlag = true;
+                return;
             }
             echo "Колонка:";
             $col = readline();
