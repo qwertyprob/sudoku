@@ -30,6 +30,20 @@ class Board
 
     private function __construct() {
     }
+    public static function getBoard()
+    {
+        return self::$board;
+    }
+
+    public static function setBoard($board)
+    {
+        self::$board = $board;
+    }
+
+    public static function getErrorCounter()
+    {
+        return self::$errorCounter;
+    }
 
     public static function printBoard(){
 
@@ -81,6 +95,8 @@ class Board
             return;
         }
 
+
+
         self::$board[$row-1][$col-1] = $value;
         echo "\n\033[32mИнформация:\033[0m Вы успешно вставили цифру!\n";
     }
@@ -88,7 +104,6 @@ class Board
         self::$errorCounter++;
         echo "\n\033[31mОшибка: \033[0m$message";
     }
-
 
     private static function checkInCube($row,$col,$value)
     {
